@@ -1,7 +1,7 @@
 import createIntervalTree from "interval-tree-1d"
 import {Note} from "./Note.js"
 export class Score {
-    constructor(container, scrollElement) {
+    constructor(container, scrollElement,actualH) {
 
         /**
          *  all of the notes
@@ -19,11 +19,6 @@ export class Score {
         this.currentlyDisplayedNotes = [];
 
         /**
-         *  the notes that are currently being triggered by scrubbing
-         */
-        this.currentlyTriggeredNotes = [];
-
-        /**
          *  the interval tree
          */
         this.intervalTree = null;
@@ -32,7 +27,7 @@ export class Score {
          * the width of the scroll container
          */
         this.width = 0;
-
+        this.actualH = actualH;
         /**
          * The canvas which notes are drawn to
          * @type {Element}
@@ -60,26 +55,12 @@ export class Score {
     setNotes(notes) {
         this._currentNotes = notes;
         this.clearNotes();
-        //get the min/max data
-        var minNote = Infinity;
-        var maxNote = -Infinity;
-        notes.forEach(function (note) {
-            if (note.midiNote > maxNote) {
-                maxNote = note.midiNote;
-            }
-            if (note.midiNote < minNote) {
-                minNote = note.midiNote;
-            }
-        });
-        //some padding
-        minNote -= 3;
-        maxNote += 3;
-        var noteHeight = this.element.offsetHeight / (maxNote - minNote);
+        var noteHeight = (this.actualH-25) / 128;
         var displayOptions = {
-            "min": minNote,
-            "max": maxNote,
+            "min": 0,
+            "max": 127,
             "pixelsPerSecond": this.pixelsPerSecond,
-            "noteHeight": Math.round(noteHeight)
+            "noteHeight": noteHeight
         };
         this.intervalTree = new createIntervalTree();
         var duration = -Infinity;
@@ -90,10 +71,14 @@ export class Score {
             }
             this.intervalTree.insert([note.noteOn, note.noteOff, note]);
         }
-        console.log(this.intervalTree)
+        // console.log(this.intervalTree)
         //set the width
+        console.log(duration * this.pixelsPerSecond)
         this.width = duration * this.pixelsPerSecond + window.innerWidth * 2;
+        // this.width = duration * this.pixelsPerSecond;
+
         this.element.style.width = this.width + "px";
+        // this.element.style.width = this.width ;
     }
     /**
      *  Resuze the drawing canvas
@@ -128,8 +113,8 @@ export class Score {
      *  @return  {Array}
      */
     showOnScreenNotes(from, to) {
-        var fromSeconds = from / this.pixelsPerSecond;
-        var toSeconds = to / this.pixelsPerSecond;
+        var fromSeconds = from / this.pixelsPerSecond/4;
+        var toSeconds = to / this.pixelsPerSecond/4;
         if (this.intervalTree !== null) {
             var notes = [];
             this.intervalTree.queryInterval(fromSeconds, toSeconds, function (res) {
@@ -138,20 +123,6 @@ export class Score {
             this.currentlyDisplayedNotes = notes;
         }
     }
-    /**
-     *  get the note attacks between 'from' and 'to' PIXELS!
-     *  @return  {Array}
-     */
-    // getTriggerLine(position) {
-    //     if (this.intervalTree !== null) {
-    //         var notes = [];
-    //         position = position / this.pixelsPerSecond;
-    //         this.intervalTree.queryPoint(position, function (res) {
-    //             notes.push(res[2]);
-    //         });
-    //         return notes;
-    //     }
-    // }
     /**
      *  clear all of the children
      */
@@ -189,7 +160,7 @@ export class Score {
 /**
  *  useful for drawing / scrubbing
  */
-Score.prototype.pixelsPerSecond = 200;
+Score.prototype.pixelsPerSecond = 100;
 
 
 

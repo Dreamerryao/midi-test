@@ -1,63 +1,55 @@
-import {Transport} from "tone"
+import { Transport } from "tone"
 
 export class Note {
     constructor(noteDescription, displayOptions) {
         this.noteOn = Transport.toSeconds(noteDescription.time);
         this.duration = Transport.toSeconds(noteDescription.duration);
         this.noteOff = this.noteOn + this.duration;
-        this.color = "#ff0000";
+        this.strokeColor = "#217230";
+        this.fillColor = "#A2F0B1";
         this.note = noteDescription.note;
         this.velocity = noteDescription.velocity;
         this.midiNote = noteDescription.midiNote;
         this._triggered = false;
-        var top = (displayOptions.max - displayOptions.min) * (1 - (this.midiNote - displayOptions.min) / (displayOptions.max - displayOptions.min));
-        top *= displayOptions.noteHeight - 2;
+        var top = this.midiNote;
+        top *= displayOptions.noteHeight;
         this.top = top;
-        this.left = this.noteOn * displayOptions.pixelsPerSecond;
-        this.width = (this.duration * displayOptions.pixelsPerSecond) - 2;
-        this.width = Math.max(this.width, 3);
-        this.height = displayOptions.noteHeight - 2;
-        // console.log()
-    }
-    /**
-     *  trigger the attack
-     */
-    triggerAttack() {
-        this._triggered = true;
-    }
-    /**
-     *  trigger the release
-     */
-    triggerRelease() {
-        this._triggered = false;
-    }
-    triggerAttackRelease(duration) {
-        duration = Transport.toSeconds(duration);
-        this.needsUpdate = true;
-        this._triggered = true;
-        setTimeout(function () {
-            this._triggered = false;
-            this.needsUpdate = true;
-        }.bind(this), duration * 1000);
+        this.left = this.noteOn * displayOptions.pixelsPerSecond*4;
+        this.width = (this.duration * displayOptions.pixelsPerSecond*4);
+        // this.width = Math.max(3,this.width);
+        this.height = displayOptions.noteHeight;
     }
     /**
      *  Display the element
      */
     draw(context) {
+        
         context.beginPath();
         if (this._triggered) {
             context.fillStyle = "black";
         } else {
-            context.fillStyle = this.color;
+            context.fillStyle = this.fillColor;
         }
+        context.fillStyle = this.strokeColor;
+        context.strokeStyle = this.fillColor;
         context.fillRect(this.left * 2, this.top * 2, this.width * 2, this.height * 2);
+        let padding = Math.min(Math.min(this.width, 6), Math.min(this.height, 6));
+        let lineWidth = this.height*2 - padding *2;
+        context.lineWidth = lineWidth;
+        context.beginPath();
+        context.moveTo(this.left*2+padding+lineWidth/2,this.top*2+padding+lineWidth/2);
+        context.lineTo(this.left*2+this.width*2-padding-lineWidth/2,this.top*2+padding+lineWidth/2);
+        context.closePath();
+        context.lineJoin = "round";
+        context.stroke();
+
     }
     /**
      *  trigger the release
      */
     dispose() {
-        Transport.cancel(this.noteOnId);
-        Transport.cancel(this.noteOffId);
+        // Transport.cancel(this.noteOnId);
+        // Transport.cancel(this.noteOffId);
         this.element.remove();
         this.element = null;
     }

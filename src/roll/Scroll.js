@@ -49,8 +49,8 @@ export class Scroll {
         // this.element.addEventListener("mousewheel", this.scrolling.bind(this));
         // this.element.addEventListener("DomMouseScroll", this.scrolling.bind(this));
         // $(this.element).on("mousewheel", this.scrolling.bind(this));
-        this.element.addEventListener("touchstart", this.touchstart.bind(this));
-        this.element.addEventListener("touchend", this.touchend.bind(this));
+        // this.element.addEventListener("touchstart", this.touchstart.bind(this));
+        // this.element.addEventListener("touchend", this.touchend.bind(this));
 
         /**
          * a prebound version of the loop function
@@ -59,17 +59,8 @@ export class Scroll {
         //start the loop
         this.loop();
 
-        /**
-         *  the callback function when touch override starts
-         */
-        this.scrubstart = function () { };
 
-        /**
-         *  the callback function when touch override end
-         */
-        this.scrubend = function () { };
-
-        //scroll back to the top if the page was reloaded
+        // //scroll back to the top if the page was reloaded
         window.addEventListener("beforeunload", function () {
             this.element.scrollLeft = 0;
         }.bind(this));
@@ -80,60 +71,12 @@ export class Scroll {
     loop() {
         var currentTime = Date.now();
         requestAnimationFrame(this._boundloop);
-        //test if manual override is over
-        if (this.manualOverride && !this.touchdown) {
-            var scroll = this.element.scrollLeft;
-            if (scroll === this.currentScroll) {
-                if (this.restStart === -1) {
-                    this.restStart = currentTime;
-                } else if (currentTime - this.restStart > 100) {
-                    this.manualOverride = false;
-                    this.scrubend(this.currentScroll);
-                }
-            } else {
-                this.restStart = -1;
-            }
-            this.currentScroll = scroll;
-        }
-        if (this.lastUpdate !== -1 && !this.manualOverride && this.autoAdvance) {
+        if (this.lastUpdate !== -1 && this.autoAdvance) {
             var delta = currentTime - this.lastUpdate;
             this.currentScroll += (delta / 1000) * this.pixelsPerSecond;
             this.element.scrollLeft = Math.round(this.currentScroll);
         }
         this.lastUpdate = currentTime;
-    }
-    /**
-     *  callback when it's scrolling
-     */
-    scrolling() {
-        if (!this.manualOverride) {
-            this.manualOverride = true;
-            this.scrubstart();
-        }
-    }
-    /**
-     *  called on touch
-     */
-    touchstart() {
-        this.touchdown = true;
-        this.scrolling();
-    }
-    /**
-     *  called on touchend
-     */
-    touchend() {
-        this.touchdown = false;
-    }
-    /**
-     *  While the scrolling isn't paused,
-     *  move forward normally
-     */
-    move() {
-        /*if (this.lastUpdate !== -1){
-            var delta = currentTime - this.lastUpdate;
-            this.currentScroll += (delta / 1000) * this.pixelsPerSecond;
-            this.element.scrollLeft(this.currentScroll);
-        }*/
     }
     /**
      *  start auto advancing

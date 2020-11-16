@@ -32,12 +32,12 @@ export class Roll {
         this._scrollContainer.appendChild(this._scrollElement);
 
         //THE SCORE DISPLAY
-        this._score = new Score(this._element, this._scrollElement);
+        this._score = new Score(this._element, this._scrollElement,this._scrollContainer.offsetHeight);
 
         //the scroll handler
         this._scroll = new Scroll(this._scrollContainer, this._score.pixelsPerSecond);
-        this._scroll.scrubstart = this._scrubStarted.bind(this);
-        this._scroll.scrubend = this._scrubEnd.bind(this);
+        // this._scroll.scrubstart = this._scrubStarted.bind(this);
+        // this._scroll.scrubend = this._scrubEnd.bind(this);
 
         // if it's scrubbing
         this._scrubbing = false;
@@ -74,46 +74,27 @@ export class Roll {
         this._width = this._scrollContainer.offsetWidth;
     }
     _computeStartTime() {
-        var width = this._scrollContainer.offsetWidth;
-        this._computedStartTime = Transport.now() - (this._currentScroll - width / 2) / this._score.pixelsPerSecond;
+        // var width = this._scrollContainer.offsetWidth;
+        this._computedStartTime = Transport.now() - (this._currentScroll) / this._score.pixelsPerSecond;
     }
-    _scrubStarted() {
-        this._scrubbing = true;
-        //release all the current notes
-        for (var i = 0; i < this._currentNotes.length; i++) {
-            this._currentNotes[i].triggerRelease();
-        }
-        this.onstop();
-    }
-    _scrubEnd() {
-        this._scrubbing = false;
-        this._computeStartTime();
-    }
+    // _scrubStarted() {
+    //     this._scrubbing = true;
+    //     //release all the current notes
+    //     for (var i = 0; i < this._currentNotes.length; i++) {
+    //         this._currentNotes[i].triggerRelease();
+    //     }
+    //     this.onstop();
+    // }
+    // _scrubEnd() {
+    //     this._scrubbing = false;
+    //     this._computeStartTime();
+    // }
     /**
      * Draw the currently on screen notes
      */
     _onScreenNotes() {
         var width = this._width;
-        // var notes = this._score.showOnScreenNotes(this._currentScroll - width/2, this._currentScroll + width/2);
         this._score.showOnScreenNotes(this._currentScroll - width, this._currentScroll);
-        // var triggerLineNotes = this._score.getTriggerLine(this._currentScroll - width / 2 - 1);
-        // if (triggerLineNotes) {
-        //     //compare it to the last one and get the note attacks and releases
-        //     for (var i = 0; i < triggerLineNotes.length; i++) {
-        //         if (this._currentNotes.indexOf(triggerLineNotes[i]) === -1) {
-        //             var note = triggerLineNotes[i];
-        //             if (this._scrubbing) {
-        //                 this.onnote(note.note, 0.1, "+0.05", note.velocity * 0.3);
-        //                 note.triggerAttackRelease(0.1, "+0.05", note.velocity);
-        //             } else {
-        //                 var startTime = this._computedStartTime + note.noteOn + lookAhead;
-        //                 this.onnote(note.note, note.duration, startTime, note.velocity);
-        //                 note.triggerAttackRelease(note.duration, startTime, note.velocity);
-        //             }
-        //         }
-        //     }
-        //     this._currentNotes = triggerLineNotes;
-        // }
     }
     _loop() {
         requestAnimationFrame(this._bindedLoop);

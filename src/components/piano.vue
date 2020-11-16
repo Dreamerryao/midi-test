@@ -5,140 +5,44 @@
         v-for="(key, index) in keys"
         :key="index"
         :style="key.style"
-
         :class="[...key.class]"
       >
-                <!-- @click="toggleActive(key.name)" -->
-        <span v-if="key.name.indexOf('C')!=-1&&key.name.indexOf('#')===-1">{{ key.name }}</span>
+        <!-- @click="toggleActive(key.name)" -->
+        <span
+          v-if="key.name.indexOf('C') != -1 && key.name.indexOf('#') === -1"
+          >{{ key.name }}</span
+        >
       </li>
     </ul>
   </div>
 </template>
 
 <script>
-import { clamp } from "@/lib/math";
-// import pianoState from "@/lib/piano-state";
-
 const WHITE_KEYS = ["C", "D", "E", "F", "G", "A", "B"];
 const BLACK_KEYS = ["C#", "D#", null, "F#", "G#", "A#", null];
-// const NOTE_OFFSETS = ["C", "D", "E", "F", "G", "A", "B"];
 const NUM_WHITE_KEYS_PER_OCTAVE = 7;
 const NUM_BLACK_KEYS_PER_OCTAVE = 5;
-// const NUM_WHITE_KEYS_TOTAL = 52;
-// const NUM_BLACK_KEYS_TOTAL = 36;
 const MIN_OCTAVE = -2;
 const MAX_OCTAVE = 8;
 const MIN_NOTE = 0;
 const MAX_NOTE = 6;
 
+const clamp = (num, min, max) => {
+  return Math.max(min, Math.min(max, num));
+};
 export default {
-  props: {
-    //octaveStart = -2;
-    //octaveEnd = 8;
-    //noteStart = WHITE_KEYS.indexOf("C");
-    //noteEnd = WHITE_KEYS.indexOf("G");
-    //C-2 - G8
-    // octaveStart: {
-    //   type: Number,
-    //   validator(value) {
-    //     return value >= MIN_OCTAVE && value <= MAX_OCTAVE;
-    //   },
-    //   default() {
-    //     return MIN_OCTAVE;
-    //   },
-    // },
-
-    // octaveEnd: {
-    //   type: Number,
-    //   validator(value) {
-    //     return value >= MIN_OCTAVE && value <= MAX_OCTAVE;
-    //   },
-    //   default() {
-    //     return MAX_OCTAVE;
-    //   },
-    // },
-
-    // noteStart: {
-    //   type: [Number, String],
-    //   validator(value) {
-    //     if (typeof value === "string") {
-    //       return WHITE_KEYS.includes(value);
-    //     } else {
-    //       return value >= MIN_NOTE && value <= MAX_NOTE;
-    //     }
-    //   },
-    //   default() {
-    //     return WHITE_KEYS.indexOf("A");
-    //   },
-    // },
-
-    // noteEnd: {
-    //   type: [Number, String],
-    //   validator(value) {
-    //     if (typeof value === "string") {
-    //       return WHITE_KEYS.includes(value);
-    //     } else {
-    //       return value >= MIN_NOTE && value <= MAX_NOTE;
-    //     }
-    //   },
-    //   default() {
-    //     return WHITE_KEYS.indexOf("C");
-    //   },
-    // },
-  },
-
-  created() {
-    // if (typeof this.noteStart === "string") {
-    //   this.offsets.noteStart = WHITE_KEYS.indexOf(this.noteStart);
-    // } else {
-    //   this.offsets.noteStart = this.noteStart;
-    // }
-
-    // if (typeof this.noteEnd === "string") {
-    //   this.offsets.noteEnd = WHITE_KEYS.indexOf(this.noteEnd);
-    // } else {
-    //   this.offsets.noteEnd = this.noteEnd;
-    // }
-
-    // this.offsets.octaveStart = this.octaveStart;
-    // this.offsets.octaveEnd = this.octaveEnd;
-
-    // if (
-    //   this.offsets.octaveStart > this.offsets.octaveEnd ||
-    //   (this.offsets.octaveStart === this.offsets.octaveEnd &&
-    //     this.offsets.noteStart > this.offsets.noteEnd)
-    // ) {
-    //   throw new Error(
-    //     "The start octave must be lower than or equal to the end octave and the start note must be lower than the end note."
-    //   );
-    // }
-  },
-
   data() {
     return {
       offsets: {
         octaveStart: -2,
         octaveEnd: 8,
         noteStart: 0,
-        noteEnd:4,
+        noteEnd: 4,
       },
     };
   },
 
   methods: {
-    // playNote(note) {
-    //   console.log(note);
-    // },
-    // noteActive(note) {
-    //   return pianoState[note] === true;
-    // },
-
-    // toggleActive(note) {
-    //   pianoState[note] === true
-    //     ? (pianoState[note] = false)
-    //     : (pianoState[note] = true);
-    // },
-
     calculateOctave(n) {
       return (
         Math.floor(n / NUM_WHITE_KEYS_PER_OCTAVE) +
@@ -148,15 +52,7 @@ export default {
   },
 
   computed: {
-    // pianoState() {
-    //   return pianoState;
-    // },
-
     offsetStart() {
-      // if (this.octaveStart === 0 && this.offsets.noteStart < 5) {
-      //   return 5
-      // }
-
       return clamp(this.offsets.noteStart, MIN_NOTE, MAX_NOTE);
     },
 
@@ -165,20 +61,18 @@ export default {
     },
 
     totalWhiteKeys() {
-      return Math.min(
-        Infinity, // NUM_WHITE_KEYS_TOTAL,
+      return (
         this.numOctaves * NUM_WHITE_KEYS_PER_OCTAVE -
-          this.offsetStart -
-          (NUM_WHITE_KEYS_PER_OCTAVE - (this.offsetEnd + 1))
+        this.offsets.noteStart -
+        (NUM_WHITE_KEYS_PER_OCTAVE - (this.offsets.noteEnd + 1))
       );
     },
 
     totalBlackKeys() {
-      return Math.min(
-        Infinity, // NUM_BLACK_KEYS_TOTAL,
+      return (
         this.numOctaves * NUM_BLACK_KEYS_PER_OCTAVE -
-          this.offsetStart -
-          (NUM_BLACK_KEYS_PER_OCTAVE - (this.offsetEnd + 1))
+        this.offsets.noteStart -
+        (NUM_BLACK_KEYS_PER_OCTAVE - (this.offsets.noteEnd + 1))
       );
     },
 
@@ -205,6 +99,7 @@ export default {
       const keys = [];
 
       // White keys.
+      let nowNum = 1; //记录当前跨度
       for (let i = this.offsetStart, j = 0; j < this.totalWhiteKeys; i++, j++) {
         const octave = this.calculateOctave(i);
         const keyName = WHITE_KEYS[i % 7];
@@ -213,21 +108,28 @@ export default {
         // if (octave === 0 && WHITE_KEYS.indexOf(keyName) < 5) {
         //   continue
         // }
-
+        let step = 3;
+        // console.log(i%7)
+        if (i % 7 === 1 || i % 7 === 4 || i % 7 === 5) step = 4;
         const key = {
           name: `${keyName}${octave}`,
-          class: ["white", keyName, `${keyName}${octave}`],
+          class: ["white"],
           style: {
-            // "grid-column": `${j === 0 ? 1 : 4 + (j - 1) * 3} / span 3`,
-            "grid-row": `${j === 0 ? 1 : 4 + (j - 1) * 3} / span 3`,
+            "grid-row": `${nowNum} / span ${step}`,
           },
         };
+        nowNum += step;
 
         keys.push(key);
       }
 
       // Black keys.
+      nowNum = 0;
       for (let i = this.offsetStart, j = 0; j < this.totalWhiteKeys; i++, j++) {
+        let step = 3;
+        // console.log(i%7)
+        if (i % 7 === 1 || i % 7 === 4 || i % 7 === 5) step = 4;
+        nowNum +=step;
         const octave = this.calculateOctave(i);
         const keyName = BLACK_KEYS[i % 7];
 
@@ -240,16 +142,15 @@ export default {
         if (octave >= 9) {
           continue;
         }
-        if(octave === 8 && i%7 === 4)continue;
+        if (octave === 8 && i % 7 === 4) continue;
 
-        const keyNameClass = keyName.replace("#", "s");
+        // const keyNameClass = keyName.replace("#", "s");
 
         const key = {
           name: `${keyName}${octave}`,
-          class: ["black", keyNameClass, `${keyNameClass}${octave}`],
+          class: ["black"],
           style: {
-              "grid-row":`${j === 0 ? 3 : 6 + (j - 1) * 3} / span 2`,
-            // "grid-column": `${j === 0 ? 3 : 6 + (j - 1) * 3} / span 2`,
+            "grid-row": `${nowNum} / span 2`,
           },
         };
 
@@ -281,7 +182,7 @@ ul {
   width: 100%;
   list-style-type: none;
   display: grid;
-  grid-template-rows: repeat(calc(var(--keys) * 3), 1fr);
+  grid-template-rows: repeat(256, 1fr);
   grid-template-columns: repeat(3, 1fr);
 }
 
@@ -319,46 +220,5 @@ li.black span {
 .blank {
   border-width: 0;
   grid-column: 1 / span 2;
-}
-
-li {
-  transition: background-color 0.2s;
-}
-
-.Fs.active {
-  background-color: rgb(174, 0, 0);
-}
-.G.active {
-  background-color: rgb(255, 0, 0);
-}
-.Gs.active {
-  background-color: rgb(255, 0, 0);
-}
-.A.active {
-  background-color: rgb(255, 102, 0);
-}
-.As.active {
-  background-color: rgb(255, 239, 0);
-}
-.B.active {
-  background-color: rgb(153, 255, 0);
-}
-.C.active {
-  background-color: rgb(0, 40, 255);
-}
-.Cs.active {
-  background-color: rgb(0, 255, 242);
-}
-.D.active {
-  background-color: rgb(0, 122, 255);
-}
-.Ds.active {
-  background-color: rgb(5, 0, 255);
-}
-.E.active {
-  background-color: rgb(71, 0, 237);
-}
-.F.active {
-  background-color: rgb(99, 0, 178);
 }
 </style>

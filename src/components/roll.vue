@@ -112,11 +112,12 @@ export default {
   height: 100%;
 }
 #RollContainer {
-  position: sticky;
+  position: relative;
   width: 100%;
-  height: calc(100% - 25px);
-  left: 0px;
-  top: 0px;
+  /* height: calc(100% - 25px); */
+  height:100%;
+  /* left: 0px; */
+  /* top: 0px; */
   overflow: hidden;
 }
 #TriggerLine {
@@ -136,10 +137,11 @@ export default {
   top: 0px;
   left: 0px;
   z-index: 0;
-  height: calc(100% - 25px);
+  /* height: calc(100% - 25px); */
 }
 #ScrollContainer {
   height: calc(100% + 25px);
+  /* height: 100%; */
   width: 100%;
   position: absolute;
   top: 0px;

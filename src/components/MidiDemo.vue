@@ -52,12 +52,6 @@ export default {
     }
   },
   created(){
-    // this.roll = new Roll(document.body);
-    // this.roll.setScore(pre);
-    // console.log(pre);
-    // this.reload();
-
-    // const now = Tone.now() + 0.5;
     Midi.fromUrl("/audio/IFeelTheEarthMove.mid")
     .then(midi=>{
       console.log(midi);
@@ -96,17 +90,17 @@ export default {
   background-color: antiquewhite;
   display: flex;
   width: 1800px;
-  height: 1920px;
+  height: 1500px;
   margin: auto auto;
 }
 .piano {
     background-color:azure;
-    width:100px;
+    width:80px;
     height:100%;
 }
 .roll{
   background-color: aquamarine;
-  width:1600px;
+  width:1500px;
   height:100%;
 }
 
