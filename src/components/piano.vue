@@ -8,6 +8,7 @@
         :class="[...key.class]"
       >
         <!-- @click="toggleActive(key.name)" -->
+        
         <span
           v-if="key.name.indexOf('C') != -1 && key.name.indexOf('#') === -1"
           >{{ key.name }}</span
@@ -22,8 +23,8 @@ const WHITE_KEYS = ["C", "D", "E", "F", "G", "A", "B"];
 const BLACK_KEYS = ["C#", "D#", null, "F#", "G#", "A#", null];
 const NUM_WHITE_KEYS_PER_OCTAVE = 7;
 const NUM_BLACK_KEYS_PER_OCTAVE = 5;
-const MIN_OCTAVE = -2;
-const MAX_OCTAVE = 8;
+const MIN_OCTAVE = -1;
+const MAX_OCTAVE = 9;
 const MIN_NOTE = 0;
 const MAX_NOTE = 6;
 
@@ -34,8 +35,8 @@ export default {
   data() {
     return {
       offsets: {
-        octaveStart: -2,
-        octaveEnd: 8,
+        octaveStart: -1,
+        octaveEnd: 9,
         noteStart: 0,
         noteEnd: 4,
       },
@@ -139,10 +140,11 @@ export default {
         }
 
         // Skip > C8.
-        if (octave >= 9) {
+        // if (octave >= 9) {
+          if (octave >= 10) {
           continue;
         }
-        if (octave === 8 && i % 7 === 4) continue;
+        if (octave === 9 && i % 7 === 4) continue;
 
         // const keyNameClass = keyName.replace("#", "s");
 

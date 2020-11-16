@@ -7,9 +7,9 @@ export class Note {
         this.noteOff = this.noteOn + this.duration;
         this.strokeColor = "#217230";
         this.fillColor = "#A2F0B1";
-        this.note = noteDescription.note;
+        this.note = noteDescription.name;
         this.velocity = noteDescription.velocity;
-        this.midiNote = noteDescription.midiNote;
+        this.midiNote = noteDescription.midi;
         this._triggered = false;
         var top = this.midiNote;
         top *= displayOptions.noteHeight;

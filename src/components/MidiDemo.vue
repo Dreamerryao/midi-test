@@ -1,25 +1,22 @@
 <template>
   <div class="page">
     <h1>Hi,Here is a midi display demo by dreamerryao</h1>
+    <button @click="handleChange">{{playing}}</button>
     <div class="container">
       <!-- container -->
       <div class="piano">
           <piano/>
       </div>
       <div class="roll">
-        <roll :track="testTrack" v-if="update"/>
+        <roll :track="testTrack" :playing="playing" v-if="update"/>
       </div>
     </div>
   </div>
 </template>
 <script>
 import piano from "./piano.vue"
-// import {Roll} from "../roll/Roll.js";
 import roll from "./roll.vue"
 import {Midi} from "@tonejs/midi"
-// import pre from "./preludeInC.json";
-// import Tone, { Buffer, Sequence, Transport, Event, Draw, context } from "tone"
-// import {Transport} from "tone"
 export default {
   name: "MidiDemo",
   data(){
@@ -28,27 +25,15 @@ export default {
       tracks:[],
       testTrack:{},
       update:false,
-      // roll:null
     }
   },
-  // watch: {
-  //   testTrack(newV,old) {
-  //       // this.actualTrack = this.track;
-  //       console.log('props',newV);
-  //       console.log('props',old);
-  //   }
-  // },
   components:{
       piano,
       roll
   },
   methods:{
-    // togglePlayback(){
-    //   this.playing?Transport.pause():Transport.start();
-    //   this.playing = !this.playing;
-    // },
-    reload() {
-            this.$forceUpdate()
+    handleChange(){
+      this.playing = !this.playing;
     }
   },
   created(){
@@ -58,8 +43,7 @@ export default {
       midi.tracks.forEach((track,index) =>{
         this.tracks.push(track);
         if(index===9)this.testTrack = track;
-        // console.log(`track${index}:`);
-        // console.log(track);
+
       })
       console.log(this.tracks);
       console.log(this.testTrack)
@@ -68,16 +52,6 @@ export default {
 
     })
   },
-  mounted(){
-    // var wow = document.getElementById("root");
-    // wow.style.width = "200px";
-
-    // this.roll = new Roll(document.getElementById("root"));
-
-    // this.roll.setScore(pre);
-    // console.log(pre);
-    // this.roll.start();
-  }
 };
 </script>
 

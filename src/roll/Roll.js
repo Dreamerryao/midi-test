@@ -3,44 +3,20 @@ import { Transport } from "tone"
 import {Scroll} from "./Scroll"
 // var lookAhead = 0.05;
 
-
 export class Roll {
-    constructor(container) {
+    constructor() {
 
-        /**
-         *  The scroll container
-         */
-        this._element = document.createElement("div");
-        this._element.id = "RollContainer";
-        container.appendChild(this._element);
-
-        // The trigger line that sits in the center
-        // var triggerLine = document.createElement("div");
-        // triggerLine.id = "TriggerLine";
-        // this._element.appendChild(triggerLine);
-
-        /**
-         *  The scrolling container
-         */
-        this._scrollContainer = document.createElement("div");
-        this._scrollContainer.id = "ScrollContainer";
-        this._element.appendChild(this._scrollContainer);
+        this._element = document.getElementById("RollContainer");
+        this._scrollContainer = document.getElementById("ScrollContainer");
+        this._scrollElement = document.getElementById("PianoRoll");
 
 
-        this._scrollElement = document.createElement("div");
-        this._scrollElement.id = "PianoRoll";
-        this._scrollContainer.appendChild(this._scrollElement);
+        //display score
+        this._score = new Score(this._scrollElement,this._scrollContainer.offsetHeight);
 
-        //THE SCORE DISPLAY
-        this._score = new Score(this._element, this._scrollElement,this._scrollContainer.offsetHeight);
-
-        //the scroll handler
+        //scroll handler
         this._scroll = new Scroll(this._scrollContainer, this._score.pixelsPerSecond);
-        // this._scroll.scrubstart = this._scrubStarted.bind(this);
-        // this._scroll.scrubend = this._scrubEnd.bind(this);
 
-        // if it's scrubbing
-        this._scrubbing = false;
 
         this._started = false;
 
@@ -53,10 +29,6 @@ export class Roll {
         //the time at the beginning of the piano roll
         this._computedStartTime = 0;
 
-        //callback when a note is triggered
-        this.onnote = function () { };
-        this.onstop = function () { };
-
         //a binding of the loop
         this._bindedLoop = this._loop.bind(this);
 
@@ -66,9 +38,6 @@ export class Roll {
         this._width = this._scrollContainer.offsetWidth;
 
         window.addEventListener("resize", this._resize.bind(this));
-
-        //set the lookahead to match the other one
-        // Transport._clock.lookAhead = lookAhead;
     }
     _resize() {
         this._width = this._scrollContainer.offsetWidth;
@@ -77,21 +46,6 @@ export class Roll {
         // var width = this._scrollContainer.offsetWidth;
         this._computedStartTime = Transport.now() - (this._currentScroll) / this._score.pixelsPerSecond;
     }
-    // _scrubStarted() {
-    //     this._scrubbing = true;
-    //     //release all the current notes
-    //     for (var i = 0; i < this._currentNotes.length; i++) {
-    //         this._currentNotes[i].triggerRelease();
-    //     }
-    //     this.onstop();
-    // }
-    // _scrubEnd() {
-    //     this._scrubbing = false;
-    //     this._computeStartTime();
-    // }
-    /**
-     * Draw the currently on screen notes
-     */
     _onScreenNotes() {
         var width = this._width;
         this._score.showOnScreenNotes(this._currentScroll - width, this._currentScroll);
@@ -116,14 +70,15 @@ export class Roll {
     /**
      * set the json score
      */
-    setScore(json) {
-        Transport.bpm.value = json.header.tempo;
-        Transport.timeSignature = json.header.timeSignature;
+    setScore(track) {
+        // Transport.bpm.value = json.header.tempo;
+        // Transport.timeSignature = json.header.timeSignature;
         //set the notes
-        this._score.setNotes(json.notes);
+        this._score.setNotes(track.notes);
         //show the first notes initially
         var width = this._scrollContainer.offsetWidth;
-        this._currentScroll = width / 2 - 3;
+        this._currentScroll = width - 30;
+        // this._currentScroll = 0;
         this._scrollContainer.scrollLeft = this._currentScroll;
         this._onScreenNotes();
     }
@@ -133,9 +88,6 @@ export class Roll {
     }
     stop() {
         this._scroll.stop();
-        for (var i = 0; i < this._currentNotes.length; i++) {
-            this._currentNotes[i].triggerRelease();
-        }
         this.onstop();
     }
 }

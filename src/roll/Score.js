@@ -1,7 +1,7 @@
 import createIntervalTree from "interval-tree-1d"
 import {Note} from "./Note.js"
 export class Score {
-    constructor(container, scrollElement,actualH) {
+    constructor(scrollElement,actualH) {
 
         /**
          *  all of the notes
@@ -32,9 +32,7 @@ export class Score {
          * The canvas which notes are drawn to
          * @type {Element}
          */
-        this.canvas = document.createElement("canvas");
-        this.canvas.id = "ScoreCanvas";
-        container.appendChild(this.canvas);
+        this.canvas = document.getElementById("ScoreCanvas");
 
         /**
          * The canvas measurements
@@ -147,13 +145,24 @@ export class Score {
     draw(offset) {
         this.context.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
         this.context.save();
+        this.drawBg();
         this.context.translate(-offset * 2, 0);
+        
         var notes = this.currentlyDisplayedNotes;
         for (var i = 0; i < notes.length; i++) {
             var n = notes[i];
             n.draw(this.context);
         }
         this.context.restore();
+    }
+    drawBg(){
+        const colors = ["#282828","#363636"];
+        var oneHeight = (this.actualH-25) / 128*2;
+        for(let i = 0;i<128;i++){
+            this.context.strokeStyle = colors[i%2];
+            this.context.fillStyle = colors[i%2];
+            this.context.fillRect(0,i*oneHeight,this.canvasWidth,oneHeight);
+        }
     }
 }
 
