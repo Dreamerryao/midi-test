@@ -2,48 +2,16 @@ import {Transport} from "tone"
 
 export class Note {
     constructor(noteDescription, displayOptions) {
-
-        /**d
-         *  Note stats
-         */
         this.noteOn = Transport.toSeconds(noteDescription.time);
         this.duration = Transport.toSeconds(noteDescription.duration);
         this.noteOff = this.noteOn + this.duration;
-
-        //parse the name from the octave, and add it as a class
-        // var noteName = noteDescription.note.match(/^([a-g]{1}[b|#]{0,1})[0-9]+$/i)[1];
-        /**
-         * The notes color
-         */
         this.color = "#ff0000";
-
-        /**
-         *  the note name
-         */
         this.note = noteDescription.note;
-
-        /**
-         *  the note velocity
-         */
         this.velocity = noteDescription.velocity;
-
-        /**
-         *  MIDI note number
-         */
         this.midiNote = noteDescription.midiNote;
-
-        /**
-         * If the note is triggered or not
-         */
         this._triggered = false;
-
-        /**
-         *  place it on the screen
-         */
         var top = (displayOptions.max - displayOptions.min) * (1 - (this.midiNote - displayOptions.min) / (displayOptions.max - displayOptions.min));
         top *= displayOptions.noteHeight - 2;
-
-        //dimensions
         this.top = top;
         this.left = this.noteOn * displayOptions.pixelsPerSecond;
         this.width = (this.duration * displayOptions.pixelsPerSecond) - 2;

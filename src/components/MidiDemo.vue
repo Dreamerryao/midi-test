@@ -101,7 +101,7 @@ export default {
 }
 .piano {
     background-color:azure;
-    width:200px;
+    width:100px;
     height:100%;
 }
 .roll{

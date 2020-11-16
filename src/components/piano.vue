@@ -5,11 +5,11 @@
         v-for="(key, index) in keys"
         :key="index"
         :style="key.style"
-         @click="toggleActive(key.name)"
-        :class="[...key.class, { active: noteActive(key.name) }]"
+
+        :class="[...key.class]"
       >
-       
-        <span>{{ key.name }}</span>
+                <!-- @click="toggleActive(key.name)" -->
+        <span v-if="key.name.indexOf('C')!=-1&&key.name.indexOf('#')===-1">{{ key.name }}</span>
       </li>
     </ul>
   </div>
@@ -17,7 +17,7 @@
 
 <script>
 import { clamp } from "@/lib/math";
-import pianoState from "@/lib/piano-state";
+// import pianoState from "@/lib/piano-state";
 
 const WHITE_KEYS = ["C", "D", "E", "F", "G", "A", "B"];
 const BLACK_KEYS = ["C#", "D#", null, "F#", "G#", "A#", null];
@@ -26,113 +26,118 @@ const NUM_WHITE_KEYS_PER_OCTAVE = 7;
 const NUM_BLACK_KEYS_PER_OCTAVE = 5;
 // const NUM_WHITE_KEYS_TOTAL = 52;
 // const NUM_BLACK_KEYS_TOTAL = 36;
-const MIN_OCTAVE = 0;
+const MIN_OCTAVE = -2;
 const MAX_OCTAVE = 8;
 const MIN_NOTE = 0;
 const MAX_NOTE = 6;
 
 export default {
   props: {
-    octaveStart: {
-      type: Number,
-      validator(value) {
-        return value >= MIN_OCTAVE && value <= MAX_OCTAVE;
-      },
-      default() {
-        return MIN_OCTAVE;
-      },
-    },
+    //octaveStart = -2;
+    //octaveEnd = 8;
+    //noteStart = WHITE_KEYS.indexOf("C");
+    //noteEnd = WHITE_KEYS.indexOf("G");
+    //C-2 - G8
+    // octaveStart: {
+    //   type: Number,
+    //   validator(value) {
+    //     return value >= MIN_OCTAVE && value <= MAX_OCTAVE;
+    //   },
+    //   default() {
+    //     return MIN_OCTAVE;
+    //   },
+    // },
 
-    octaveEnd: {
-      type: Number,
-      validator(value) {
-        return value >= MIN_OCTAVE && value <= MAX_OCTAVE;
-      },
-      default() {
-        return MAX_OCTAVE;
-      },
-    },
+    // octaveEnd: {
+    //   type: Number,
+    //   validator(value) {
+    //     return value >= MIN_OCTAVE && value <= MAX_OCTAVE;
+    //   },
+    //   default() {
+    //     return MAX_OCTAVE;
+    //   },
+    // },
 
-    noteStart: {
-      type: [Number, String],
-      validator(value) {
-        if (typeof value === "string") {
-          return WHITE_KEYS.includes(value);
-        } else {
-          return value >= MIN_NOTE && value <= MAX_NOTE;
-        }
-      },
-      default() {
-        return WHITE_KEYS.indexOf("A");
-      },
-    },
+    // noteStart: {
+    //   type: [Number, String],
+    //   validator(value) {
+    //     if (typeof value === "string") {
+    //       return WHITE_KEYS.includes(value);
+    //     } else {
+    //       return value >= MIN_NOTE && value <= MAX_NOTE;
+    //     }
+    //   },
+    //   default() {
+    //     return WHITE_KEYS.indexOf("A");
+    //   },
+    // },
 
-    noteEnd: {
-      type: [Number, String],
-      validator(value) {
-        if (typeof value === "string") {
-          return WHITE_KEYS.includes(value);
-        } else {
-          return value >= MIN_NOTE && value <= MAX_NOTE;
-        }
-      },
-      default() {
-        return WHITE_KEYS.indexOf("C");
-      },
-    },
+    // noteEnd: {
+    //   type: [Number, String],
+    //   validator(value) {
+    //     if (typeof value === "string") {
+    //       return WHITE_KEYS.includes(value);
+    //     } else {
+    //       return value >= MIN_NOTE && value <= MAX_NOTE;
+    //     }
+    //   },
+    //   default() {
+    //     return WHITE_KEYS.indexOf("C");
+    //   },
+    // },
   },
 
   created() {
-    if (typeof this.noteStart === "string") {
-      this.offsets.noteStart = WHITE_KEYS.indexOf(this.noteStart);
-    } else {
-      this.offsets.noteStart = this.noteStart;
-    }
+    // if (typeof this.noteStart === "string") {
+    //   this.offsets.noteStart = WHITE_KEYS.indexOf(this.noteStart);
+    // } else {
+    //   this.offsets.noteStart = this.noteStart;
+    // }
 
-    if (typeof this.noteEnd === "string") {
-      this.offsets.noteEnd = WHITE_KEYS.indexOf(this.noteEnd);
-    } else {
-      this.offsets.noteEnd = this.noteEnd;
-    }
+    // if (typeof this.noteEnd === "string") {
+    //   this.offsets.noteEnd = WHITE_KEYS.indexOf(this.noteEnd);
+    // } else {
+    //   this.offsets.noteEnd = this.noteEnd;
+    // }
 
-    this.offsets.octaveStart = this.octaveStart;
-    this.offsets.octaveEnd = this.octaveEnd;
+    // this.offsets.octaveStart = this.octaveStart;
+    // this.offsets.octaveEnd = this.octaveEnd;
 
-    if (
-      this.offsets.octaveStart > this.offsets.octaveEnd ||
-      (this.offsets.octaveStart === this.offsets.octaveEnd &&
-        this.offsets.noteStart > this.offsets.noteEnd)
-    ) {
-      throw new Error(
-        "The start octave must be lower than or equal to the end octave and the start note must be lower than the end note."
-      );
-    }
+    // if (
+    //   this.offsets.octaveStart > this.offsets.octaveEnd ||
+    //   (this.offsets.octaveStart === this.offsets.octaveEnd &&
+    //     this.offsets.noteStart > this.offsets.noteEnd)
+    // ) {
+    //   throw new Error(
+    //     "The start octave must be lower than or equal to the end octave and the start note must be lower than the end note."
+    //   );
+    // }
   },
 
   data() {
     return {
       offsets: {
-        octaveStart: 0,
-        octaveEnd: 3,
+        octaveStart: -2,
+        octaveEnd: 8,
         noteStart: 0,
-        noteEnd: 0,
+        noteEnd:4,
       },
     };
   },
 
   methods: {
-    playNote(note) {
-      console.log(note);
-    },
-    noteActive(note) {
-      return pianoState[note] === true;
-    },
+    // playNote(note) {
+    //   console.log(note);
+    // },
+    // noteActive(note) {
+    //   return pianoState[note] === true;
+    // },
 
-    toggleActive(note) {
-      pianoState[note] === true
-        ? (pianoState[note] = false)
-        : (pianoState[note] = true);
-    },
+    // toggleActive(note) {
+    //   pianoState[note] === true
+    //     ? (pianoState[note] = false)
+    //     : (pianoState[note] = true);
+    // },
 
     calculateOctave(n) {
       return (
@@ -143,9 +148,9 @@ export default {
   },
 
   computed: {
-    pianoState() {
-      return pianoState;
-    },
+    // pianoState() {
+    //   return pianoState;
+    // },
 
     offsetStart() {
       // if (this.octaveStart === 0 && this.offsets.noteStart < 5) {
@@ -232,9 +237,10 @@ export default {
         }
 
         // Skip > C8.
-        if (octave >= 8) {
+        if (octave >= 9) {
           continue;
         }
+        if(octave === 8 && i%7 === 4)continue;
 
         const keyNameClass = keyName.replace("#", "s");
 
@@ -288,6 +294,7 @@ li {
   align-items: flex-end;
   padding-bottom: 0.25rem;
   font-weight: bold;
+  border-radius: 0 3px 3px 0;
 }
 
 li.black span {
