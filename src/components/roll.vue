@@ -6,8 +6,6 @@
       </div>
       <canvas id="ScoreCanvas"></canvas>
     </div>
-    <!-- <button @click="wow"></button>
-    <button @click="reload()">刷新当前组件</button> -->
   </div>
 </template>
 
@@ -28,11 +26,13 @@ export default {
   },
   watch: {
     playing(newV) {
-      // do something
-      // console.log(newV, oldV);
       if (newV) {
         console.log("wow");
         this.roll.start();
+      }
+      else{
+        console.log("wuwu");
+        this.roll.stop();
       }
     },
   },
@@ -45,10 +45,7 @@ export default {
   created() {},
   mounted() {
     this.roll = new Roll();
-
-    // this.roll.setScore(pre);
     this.roll.setScore(this.track);
-    // console.log(pre);
     if (this.playing) this.roll.start();
   },
   updated() {},

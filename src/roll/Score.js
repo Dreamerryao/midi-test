@@ -111,8 +111,8 @@ export class Score {
      *  @return  {Array}
      */
     showOnScreenNotes(from, to) {
-        var fromSeconds = from / this.pixelsPerSecond/4;
-        var toSeconds = to / this.pixelsPerSecond/4;
+        var fromSeconds = from / this.pixelsPerSecond;
+        var toSeconds = to / this.pixelsPerSecond;
         if (this.intervalTree !== null) {
             var notes = [];
             this.intervalTree.queryInterval(fromSeconds, toSeconds, function (res) {
@@ -169,7 +169,7 @@ export class Score {
 /**
  *  useful for drawing / scrubbing
  */
-Score.prototype.pixelsPerSecond = 100;
+Score.prototype.pixelsPerSecond = 200;
 
 
 

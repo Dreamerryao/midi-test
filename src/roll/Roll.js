@@ -43,8 +43,9 @@ export class Roll {
         this._width = this._scrollContainer.offsetWidth;
     }
     _computeStartTime() {
-        // var width = this._scrollContainer.offsetWidth;
-        this._computedStartTime = Transport.now() - (this._currentScroll) / this._score.pixelsPerSecond;
+        var width = this._scrollContainer.offsetWidth;
+        this._computedStartTime = Transport.now() - (this._currentScroll- width) / this._score.pixelsPerSecond;
+        console.log("StartTime:"+this._computedStartTime);
     }
     _onScreenNotes() {
         var width = this._width;
@@ -88,7 +89,7 @@ export class Roll {
     }
     stop() {
         this._scroll.stop();
-        this.onstop();
+        // this.onstop();
     }
 }
 

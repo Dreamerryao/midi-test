@@ -1,82 +1,85 @@
 <template>
   <div class="page">
-    <h1>Hi,Here is a midi display demo by dreamerryao</h1>
-    <button @click="handleChange">{{playing}}</button>
-    <div class="container">
-      <!-- container -->
-      <div class="piano">
-          <piano/>
-      </div>
-      <div class="roll">
-        <roll :track="testTrack" :playing="playing" v-if="update"/>
+    <h1>Here is a midi display demo by Molar~</h1>
+    <button @click="handleChange">{{ playing }}</button>
+    <div class="ScrollArea">
+      <div class="container">
+        <!-- container -->
+        <div class="piano">
+          <piano />
+        </div>
+        <div class="roll">
+          <roll :track="testTrack" :playing="playing" v-if="update" />
+        </div>
       </div>
     </div>
   </div>
 </template>
 <script>
-import piano from "./piano.vue"
-import roll from "./roll.vue"
-import {Midi} from "@tonejs/midi"
+import piano from "./piano.vue";
+import roll from "./roll.vue";
+import { Midi } from "@tonejs/midi";
 export default {
   name: "MidiDemo",
-  data(){
+  data() {
     return {
-      playing:false,
-      tracks:[],
-      testTrack:{},
-      update:false,
-    }
+      playing: false,
+      tracks: [],
+      testTrack: {},
+      update: false,
+    };
   },
-  components:{
-      piano,
-      roll
+  components: {
+    piano,
+    roll,
   },
-  methods:{
-    handleChange(){
+  methods: {
+    handleChange() {
       this.playing = !this.playing;
-    }
+    },
   },
-  created(){
-    Midi.fromUrl("/audio/IFeelTheEarthMove.mid")
-    .then(midi=>{
+  created() {
+    Midi.fromUrl("/audio/IFeelTheEarthMove.mid").then((midi) => {
       console.log(midi);
-      midi.tracks.forEach((track,index) =>{
+      midi.tracks.forEach((track, index) => {
         this.tracks.push(track);
-        if(index===9)this.testTrack = track;
-
-      })
+        if (index === 9) this.testTrack = track;
+      });
       console.log(this.tracks);
-      console.log(this.testTrack)
+      console.log(this.testTrack);
       this.update = true;
-
-
-    })
+    });
   },
 };
 </script>
 
 <style scoped>
+.ScrollArea {
+  width: 1800px;
+  height: 300px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
 .page {
   width: 100%;
   height: 100%;
 }
 .container {
-  background-color: antiquewhite;
+  /* background-color: antiquewhite; */
   display: flex;
+
   width: 1800px;
   height: 1500px;
   margin: auto auto;
 }
 .piano {
-    background-color:azure;
-    width:80px;
-    height:100%;
+  /* background-color:azure; */
+  width: 80px;
+  height: 100%;
 }
-.roll{
-  background-color: aquamarine;
-  width:1500px;
-  height:100%;
+.roll {
+  /* background-color: aquamarine; */
+  width: 1700px;
+  height: 100%;
 }
-
-
 </style>
