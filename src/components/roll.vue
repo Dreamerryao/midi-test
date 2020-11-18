@@ -12,11 +12,11 @@
 <script>
 // import createIntervalTree from "interval-tree-1d"
 import { Roll } from "../roll/Roll.js";
-// import pre from "./preludeInC.json";
 export default {
   props: {
     track: Object,
     playing: Boolean,
+    xAxis:Number
   },
   data() {
     return {
@@ -25,27 +25,39 @@ export default {
     };
   },
   watch: {
+    xAxis(newV,oldV){
+      this.roll.changeXAxis(newV,oldV);
+      this.roll.update(this.track);
+    },
+    track(newV) {
+      console.log("new track");
+      console.log(newV);
+      console.log("update");
+      this.roll.update(newV);
+      // this.reload();
+    },
     playing(newV) {
       if (newV) {
         console.log("wow");
         this.roll.start();
-      }
-      else{
+      } else {
         console.log("wuwu");
         this.roll.stop();
       }
     },
   },
   computed: {},
-  methods: {
-    reload() {
-      this.$forceUpdate();
-    },
-  },
+  methods: {},
   created() {},
   mounted() {
-    this.roll = new Roll();
-    this.roll.setScore(this.track);
+    if (this.roll !== null) {
+      console.log("update");
+      this.roll.update(this.track);
+    } else {
+      console.log("new");
+      this.roll = new Roll();
+      this.roll.setScore(this.track);
+    }
     if (this.playing) this.roll.start();
   },
   updated() {},

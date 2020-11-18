@@ -1,7 +1,5 @@
-import {Score} from "./Score"
-import { Transport } from "tone"
-import {Scroll} from "./Scroll"
-// var lookAhead = 0.05;
+import { Score } from "./Score"
+import { Scroll } from "./Scroll"
 
 export class Roll {
     constructor() {
@@ -12,7 +10,7 @@ export class Roll {
 
 
         //display score
-        this._score = new Score(this._scrollElement,this._scrollContainer.offsetHeight);
+        this._score = new Score(this._scrollElement, this._scrollContainer.offsetHeight);
 
         //scroll handler
         this._scroll = new Scroll(this._scrollContainer, this._score.pixelsPerSecond);
@@ -27,7 +25,7 @@ export class Roll {
         this._currentScroll = -1;
 
         //the time at the beginning of the piano roll
-        this._computedStartTime = 0;
+        // this._computedStartTime = 0;
 
         //a binding of the loop
         this._bindedLoop = this._loop.bind(this);
@@ -42,31 +40,22 @@ export class Roll {
     _resize() {
         this._width = this._scrollContainer.offsetWidth;
     }
-    _computeStartTime() {
-        var width = this._scrollContainer.offsetWidth;
-        this._computedStartTime = Transport.now() - (this._currentScroll- width) / this._score.pixelsPerSecond;
-        console.log("StartTime:"+this._computedStartTime);
-    }
     _onScreenNotes() {
         var width = this._width;
-        this._score.showOnScreenNotes(this._currentScroll - width, this._currentScroll);
+        // this._score.showOnScreenNotes(this._currentScroll - width, this._currentScroll);
+        this._score.showOnScreenNotes(this._currentScroll, this._currentScroll + width);
     }
     _loop() {
         requestAnimationFrame(this._bindedLoop);
         var scrollLeft = this._scrollContainer.scrollLeft;
-        //loop
-        if (scrollLeft + this._width >= this._score.width - 2) {
-            this._currentScroll = -1;
-            this._scroll.restart();
-            this._computeStartTime();
-            this._scrollContainer.scrollLeft = 0;
-        }
+
         if (scrollLeft !== this._currentScroll) {
             this._currentScroll = scrollLeft;
             this._onScreenNotes();
         }
         //draw all of the notes
-        this._score.draw(this._currentScroll - this._width);
+        // this._score.draw(this._currentScroll - this._width);
+        this._score.draw(this._currentScroll);
     }
     /**
      * set the json score
@@ -77,19 +66,32 @@ export class Roll {
         //set the notes
         this._score.setNotes(track.notes);
         //show the first notes initially
-        var width = this._scrollContainer.offsetWidth;
-        this._currentScroll = width - 30;
-        // this._currentScroll = 0;
+        // var width = this._scrollContainer.offsetWidth;
+        // this._currentScroll = width;
+        this._currentScroll = 0;
         this._scrollContainer.scrollLeft = this._currentScroll;
         this._onScreenNotes();
     }
     start() {
-        this._computeStartTime();
+        // this._computeStartTime();
         this._scroll.start();
     }
     stop() {
         this._scroll.stop();
         // this.onstop();
+    }
+    update(track) {
+        // this._score.dispose();
+        this._score.setNotes(track.notes);
+        // this._computeStartTime();
+        this._onScreenNotes();
+    }
+    changeXAxis(value,oldV) {
+        this._score.pixelsPerSecond = 200 * value;
+        // this._currentScroll -=this._width;
+        this._currentScroll *=value/oldV;
+        this._scrollContainer.scrollLeft *=value/oldV;
+        this._scroll.changePixelsPerSecond(200 * value,this._width);
     }
 }
 

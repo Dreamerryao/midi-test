@@ -72,8 +72,9 @@ export class Score {
         // console.log(this.intervalTree)
         //set the width
         console.log(duration * this.pixelsPerSecond)
-        this.width = duration * this.pixelsPerSecond + window.innerWidth * 2;
-        // this.width = duration * this.pixelsPerSecond;
+        console.log(this.element);
+        // this.width = duration * this.pixelsPerSecond + window.innerWidth * 2;
+        this.width = duration * this.pixelsPerSecond;
 
         this.element.style.width = this.width + "px";
         // this.element.style.width = this.width ;
@@ -143,6 +144,7 @@ export class Score {
      *  Draw all of the onscreen notes
      */
     draw(offset) {
+        // console.log(offset);
         this.context.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
         this.context.save();
         this.drawBg();

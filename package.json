@@ -12,6 +12,7 @@
     "@tonaljs/tonal": "^4.5.1",
     "@tonejs/midi": "^2.0.25",
     "core-js": "^3.6.5",
+    "element-ui": "^2.14.1",
     "interval-tree-1d": "^1.0.3",
     "tone": "^14.7.58",
     "vue": "^2.6.11",
