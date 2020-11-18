@@ -57,11 +57,6 @@ export class Scroll {
         this.currentScroll = 0;
     }
     changePixelsPerSecond(newV){
-        // console.log(w)
-        // this.currentScroll -=w;
-        // this.currentScroll *=newV/this.pixelsPerSecond;
-        // this.currentScroll +=w;
-        // this.currentScroll*=newV/this.pixelsPerSecond;
         this.pixelsPerSecond = newV;
     }
 }

@@ -34,7 +34,9 @@ export class Roll {
         this._loop();
 
         this._width = this._scrollContainer.offsetWidth;
-
+        // this._currentScroll = this._scrollContainer.scrollLeft;
+        // this._onScreenNotes();
+        // this._score.draw(this._currentScroll);
         window.addEventListener("resize", this._resize.bind(this));
     }
     _resize() {
@@ -52,10 +54,11 @@ export class Roll {
         if (scrollLeft !== this._currentScroll) {
             this._currentScroll = scrollLeft;
             this._onScreenNotes();
+            this._score.draw(this._currentScroll);
         }
         //draw all of the notes
         // this._score.draw(this._currentScroll - this._width);
-        this._score.draw(this._currentScroll);
+
     }
     /**
      * set the json score
@@ -85,13 +88,14 @@ export class Roll {
         this._score.setNotes(track.notes);
         // this._computeStartTime();
         this._onScreenNotes();
+        this._score.draw(this._currentScroll);
     }
-    changeXAxis(value,oldV) {
+    changeXAxis(value, oldV) {
         this._score.pixelsPerSecond = 200 * value;
         // this._currentScroll -=this._width;
-        this._currentScroll *=value/oldV;
-        this._scrollContainer.scrollLeft *=value/oldV;
-        this._scroll.changePixelsPerSecond(200 * value,this._width);
+        this._currentScroll *= value / oldV;
+        this._scrollContainer.scrollLeft *= value / oldV;
+        this._scroll.changePixelsPerSecond(200 * value, this._width);
     }
 }
 

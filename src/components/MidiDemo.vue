@@ -64,6 +64,7 @@ export default {
       showTrack: {},
       update: false,
       value1: true,
+      MidiHead:{},
     };
   },
   components: {

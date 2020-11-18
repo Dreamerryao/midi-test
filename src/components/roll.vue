@@ -28,6 +28,7 @@ export default {
     xAxis(newV,oldV){
       this.roll.changeXAxis(newV,oldV);
       this.roll.update(this.track);
+      if(this.playing) this.roll.start();
     },
     track(newV) {
       console.log("new track");
