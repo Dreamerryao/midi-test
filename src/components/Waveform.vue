@@ -785,7 +785,7 @@ export default {
 }
 .roll {
   /* background-color: aquamarine; */
-  width: 100%;
+  width: calc(100% - 80px); 
   height: 100%;
 }
 #waveform {

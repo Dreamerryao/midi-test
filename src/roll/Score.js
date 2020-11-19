@@ -153,7 +153,7 @@ export class Score {
         // console.log(offset);
         this.context.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
         this.context.save();
-        this.drawBg();
+        this.drawBg(offset);
         this.context.translate(-offset * 2, 0);
         
         var notes = this.currentlyDisplayedNotes;
@@ -163,7 +163,7 @@ export class Score {
         }
         this.context.restore();
     }
-    drawBg(){
+    drawBg(offset){
         const colors = ["#282828","#363636"];
         var oneHeight = (this.scrollC.offsetHeight-25) / 128*2;
         for(let i = 0;i<128;i++){
@@ -172,12 +172,17 @@ export class Score {
             this.context.fillRect(0,i*oneHeight,this.canvasWidth,oneHeight);
         }
         var num = this.scrollC.offsetWidth/this.oneW*2;
-        for(let i = 0;i<num;i++){
-            this.context.strokeStyle = "#fff";
+        
+        var tmpoffset = offset%(this.oneW/2);
+        // console.log(tmpoffset);
+        this.context.strokeStyle = "#fff";
+        this.context.lineWidth = 2;
+        for(let i = 1;i<=num+1;i++){
+
             this.context.beginPath();
             // this.context.moveTo(i*this.oneW*2,0);
-            this.context.moveTo(i*this.oneW,0);
-            this.context.lineTo(i*this.oneW,this.canvasHeight);
+            this.context.moveTo(i*this.oneW-tmpoffset*2,0);
+            this.context.lineTo(i*this.oneW-tmpoffset*2,this.canvasHeight);
             this.context.closePath();
             this.context.stroke();
         }

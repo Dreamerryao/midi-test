@@ -3,6 +3,7 @@
     <div id="RollContainer">
       <div id="ScrollContainer">
         <div id="PianoRoll"></div>
+        <div id="line"></div>
       </div>
       <canvas id="ScoreCanvas"></canvas>
     </div>
@@ -72,6 +73,15 @@ export default {
 #root {
   width: 100%;
   height: 100%;
+}
+#line{
+  width:2px;
+  z-index: 3;
+  background-color: red;
+  height: 100%;
+  display: flex;
+  position: absolute;
+  left: 0px;
 }
 #RollContainer {
   position: relative;
