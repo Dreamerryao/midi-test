@@ -16,7 +16,9 @@ export default {
   props: {
     track: Object,
     playing: Boolean,
-    xAxis:Number
+    xAxis:Number,
+    duration:Number,
+    head:Object
   },
   data() {
     return {
@@ -34,7 +36,7 @@ export default {
       console.log("new track");
       console.log(newV);
       console.log("update");
-      this.roll.update(newV);
+      this.roll.update(newV,this.duration,this.head);
       // this.reload();
     },
     playing(newV) {
@@ -53,11 +55,12 @@ export default {
   mounted() {
     if (this.roll !== null) {
       console.log("update");
-      this.roll.update(this.track);
+      // this.roll.update(this.track,this.duration,this.head);
     } else {
       console.log("new");
-      this.roll = new Roll();
-      this.roll.setScore(this.track);
+      console.log(this.head)
+      this.roll = new Roll(this.head);
+      this.roll.setScore(this.track,this.duration);
     }
     if (this.playing) this.roll.start();
   },
