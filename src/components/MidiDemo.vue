@@ -1,10 +1,9 @@
 <template>
   <div class="page">
     <h1>Here is a midi display demo by Molar~</h1>
-
-    <div class="ScrollArea">
+    <Waveform></Waveform>
+    <!-- <div class="ScrollArea">
       <div class="container">
-        <!-- container -->
         <div class="piano">
           <piano />
         </div>
@@ -46,13 +45,15 @@
       :format-tooltip="formatTooltip"
       show-stops
     >
-    </el-slider>
+    </el-slider> -->
   </div>
 </template>
 <script>
-import piano from "./piano.vue";
-import roll from "./roll.vue";
-import { Midi } from "@tonejs/midi";
+// import piano from "./piano.vue";
+// import roll from "./roll.vue";
+// import { Midi } from "@tonejs/midi";
+import Waveform from "./Waveform.vue";
+
 export default {
   name: "MidiDemo",
   data() {
@@ -68,58 +69,11 @@ export default {
     };
   },
   components: {
-    piano,
-    roll,
+    // piano,
+    // roll,
+    Waveform
   },
-  methods: {
-    formatTooltip(val) {
-      return val / 100 + 0.5;
-    },
-    handleChange() {
-      this.playing = !this.playing;
-    },
-    onChange() {
-      console.log(this.value);
-      for (let track of this.tracks) {
-        track.index === this.value && (this.showTrack = track);
-      }
-      // this.showTrack = this.tracks[parseInt(this.value)];
-      console.log(this.showTrack);
-    },
-    changeMidi() {
-      this.tracks = [];
-      // this.value1 = !this.value1;
-      this.getMidi();
-    },
-    getMidi() {
-      Midi.fromUrl(
-        this.value1
-          ? "/audio/IFeelTheEarthMove.mid"
-          : "/audio/YouveGotAFriend.mid"
-      ).then((midi) => {
-        console.log(midi);
-        midi.tracks.forEach((track, index) => {
-          if (track.notes.length !== 0) {
-            let tmpTrack = track;
-            tmpTrack.index = index;
-            this.tracks.push(tmpTrack);
-          }
-          // if (index === 9) this.showTrack = track;
-        });
-        if (this.tracks.length !== 0) {
-          this.value = this.tracks[0].index;
-          this.showTrack = this.tracks[0];
-        }
-        console.log(this.tracks);
-        console.log(this.showTrack);
 
-        this.update = true;
-      });
-    },
-  },
-  created() {
-    this.getMidi();
-  },
 };
 </script>
 

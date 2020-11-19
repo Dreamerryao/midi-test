@@ -1,16 +1,21 @@
+
 import { Score } from "./Score"
 import { Scroll } from "./Scroll"
 
 export class Roll {
-    constructor() {
+    constructor(head) {
 
         this._element = document.getElementById("RollContainer");
         this._scrollContainer = document.getElementById("ScrollContainer");
         this._scrollElement = document.getElementById("PianoRoll");
-
-
+        this._scrollTopArea = document.getElementById("test");
+        // console.log(this._scrollTopArea);
+        this._head = head;
+        this._bpm = Math.round(this._head.tempos[0].bpm);
+        console.log(this._bpm);
         //display score
-        this._score = new Score(this._scrollElement, this._scrollContainer.offsetHeight);
+        
+        this._score = new Score(this._scrollElement,this._scrollContainer,this._bpm);
 
         //scroll handler
         this._scroll = new Scroll(this._scrollContainer, this._score.pixelsPerSecond);
@@ -26,6 +31,8 @@ export class Roll {
 
         //the time at the beginning of the piano roll
         // this._computedStartTime = 0;
+
+        //set bpm
 
         //a binding of the loop
         this._bindedLoop = this._loop.bind(this);
@@ -56,23 +63,25 @@ export class Roll {
             this._onScreenNotes();
             this._score.draw(this._currentScroll);
         }
-        //draw all of the notes
-        // this._score.draw(this._currentScroll - this._width);
-
     }
     /**
      * set the json score
      */
-    setScore(track) {
+    setScore(track,duration) {
         // Transport.bpm.value = json.header.tempo;
         // Transport.timeSignature = json.header.timeSignature;
         //set the notes
-        this._score.setNotes(track.notes);
+        let scrollTop = this._score.setNotes(track.notes,duration);
+        // scrollTop = 100;
+        // console.log(scrollTop);
+        this._scrollTopArea.scrollTop = scrollTop;
+        console.log(this._scrollTopArea.scrollTop);
         //show the first notes initially
         // var width = this._scrollContainer.offsetWidth;
         // this._currentScroll = width;
         this._currentScroll = 0;
         this._scrollContainer.scrollLeft = this._currentScroll;
+        // console.log(this._scrollContainer.scrollLeft);
         this._onScreenNotes();
     }
     start() {
@@ -83,9 +92,13 @@ export class Roll {
         this._scroll.stop();
         // this.onstop();
     }
-    update(track) {
+    update(track,duration,head) {
         // this._score.dispose();
-        this._score.setNotes(track.notes);
+        
+        this._head = head;
+        let scrollTop = this._score.setNotes(track.notes,duration);
+        this._scrollTopArea.scrollTop = scrollTop;
+        console.log(this._scrollTopArea.scrollTop);
         // this._computeStartTime();
         this._onScreenNotes();
         this._score.draw(this._currentScroll);

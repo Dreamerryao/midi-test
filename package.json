@@ -16,7 +16,8 @@
     "interval-tree-1d": "^1.0.3",
     "tone": "^14.7.58",
     "vue": "^2.6.11",
-    "vuex": "^3.5.1"
+    "vuex": "^3.5.1",
+    "wavesurfer.js": "^4.2.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
