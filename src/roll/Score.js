@@ -1,14 +1,17 @@
 import createIntervalTree from "interval-tree-1d"
-import {Note} from "./Note.js"
+import { Note } from "./Note.js"
 export class Score {
-    constructor(scrollElement,scrollC,bpm) {
+    constructor(scrollElement, scrollC, bpm) {
 
         /**
          *  all of the notes
          */
         this.notes = [];
         this.bpm = bpm;
-        this.oneW = Score.prototype.pixelsPerSecond*60/bpm;
+        /**
+         *  useful for drawing / scrubbing
+         */
+        this.pixelsPerSecond = 200;
         /**
          *  the score container
          */
@@ -29,7 +32,7 @@ export class Score {
          * the width of the scroll container
          */
         this.width = 0;
-        this.scrollC =scrollC;
+        this.scrollC = scrollC;
         /**
          * The canvas which notes are drawn to
          * @type {Element}
@@ -53,10 +56,10 @@ export class Score {
     /**
      *  Set the array of notes
      */
-    setNotes(notes,duration) {
+    setNotes(notes, duration) {
         this._currentNotes = notes;
         this.clearNotes();
-        var noteHeight = (this.scrollC.offsetHeight-25) / 128;
+        var noteHeight = (this.scrollC.offsetHeight - 25) / 128;
         var displayOptions = {
             "min": 0,
             "max": 127,
@@ -72,7 +75,7 @@ export class Score {
             // if (note.noteOff > duration) {
             //     duration = note.noteOff;
             // }
-            (note.midiNote<lowMidi)&&(lowMidi = note.midiNote);
+            (note.midiNote < lowMidi) && (lowMidi = note.midiNote);
             // (note.midiNote>maxMidi)&&(maxMidi = note.midiNote);
             this.intervalTree.insert([note.noteOn, note.noteOff, note]);
         }
@@ -83,7 +86,7 @@ export class Score {
         this.width = duration * this.pixelsPerSecond;
 
         this.element.style.width = this.width + "px";
-        return Math.round(noteHeight*Math.min(100,Math.max(lowMidi-1,0)));
+        return Math.round(noteHeight * Math.min(100, Math.max(lowMidi - 1, 0)));
     }
     /**
      *  Resuze the drawing canvas
@@ -155,7 +158,7 @@ export class Score {
         this.context.save();
         this.drawBg(offset);
         this.context.translate(-offset * 2, 0);
-        
+
         var notes = this.currentlyDisplayedNotes;
         for (var i = 0; i < notes.length; i++) {
             var n = notes[i];
@@ -163,36 +166,54 @@ export class Score {
         }
         this.context.restore();
     }
-    drawBg(offset){
-        const colors = ["#282828","#363636"];
-        var oneHeight = (this.scrollC.offsetHeight-25) / 128*2;
-        for(let i = 0;i<128;i++){
-            this.context.strokeStyle = colors[i%2];
-            this.context.fillStyle = colors[i%2];
-            this.context.fillRect(0,i*oneHeight,this.canvasWidth,oneHeight);
+    drawBg(offset) {
+        const colors = ["#282828", "#363636"];
+        var oneHeight = (this.scrollC.offsetHeight - 25) / 128 * 2;
+        for (let i = 0; i < 128; i++) {
+            this.context.strokeStyle = colors[i % 2];
+            this.context.fillStyle = colors[i % 2];
+            this.context.fillRect(0, i * oneHeight, this.canvasWidth, oneHeight);
         }
-        var num = this.scrollC.offsetWidth/this.oneW*2;
-        
-        var tmpoffset = offset%(this.oneW/2);
-        // console.log(tmpoffset);
+        let oneW = this.pixelsPerSecond * 60 / this.bpm;
+
+        //    console.log("oneW"+oneW);
+        var num;
+        var tmpoffset;
         this.context.strokeStyle = "#fff";
         this.context.lineWidth = 2;
-        for(let i = 1;i<=num+1;i++){
+        if (oneW > 50) {
+            num = this.scrollC.offsetWidth / oneW * 2;
+            tmpoffset = offset % (oneW / 2);
+            for (let i = 1; i <= num + 1; i++) {
 
-            this.context.beginPath();
-            // this.context.moveTo(i*this.oneW*2,0);
-            this.context.moveTo(i*this.oneW-tmpoffset*2,0);
-            this.context.lineTo(i*this.oneW-tmpoffset*2,this.canvasHeight);
-            this.context.closePath();
-            this.context.stroke();
+                this.context.beginPath();
+                // this.context.moveTo(i*oneW*2,0);
+                this.context.moveTo(i * oneW - tmpoffset * 2, 0);
+                this.context.lineTo(i * oneW - tmpoffset * 2, this.canvasHeight);
+                this.context.closePath();
+                this.context.stroke();
+            }
         }
+        else {
+            num = this.scrollC.offsetWidth / oneW;
+            tmpoffset = offset % oneW;
+            for (let i = 1; i <= num + 1; i++) {
+
+                this.context.beginPath();
+                // this.context.moveTo(i*oneW*2,0);
+                this.context.moveTo(i * oneW * 2 - tmpoffset * 2, 0);
+                this.context.lineTo(i * oneW * 2 - tmpoffset * 2, this.canvasHeight);
+                this.context.closePath();
+                this.context.stroke();
+            }
+        }
+        // console.log(tmpoffset);
+
+
     }
 }
 
-/**
- *  useful for drawing / scrubbing
- */
-Score.prototype.pixelsPerSecond = 200;
+
 
 
 

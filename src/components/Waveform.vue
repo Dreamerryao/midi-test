@@ -108,19 +108,28 @@
                 <piano />
               </div>
               <div class="roll">
-                <roll
+                <!-- <roll
                   :track="showTrack"
                   :head="MidiHead"
                   :duration="duration"
                   :playing="playing"
                   :xAxis="value2 / 100 + 0.5"
                   v-if="update"
-                />
+                /> -->
+                <div id="root">
+                  <div id="RollContainer">
+                    <div id="ScrollContainer">
+                      <div id="PianoRoll"></div>
+                      <div id="line"></div>
+                    </div>
+                    <canvas id="ScoreCanvas"></canvas>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-          <el-row>
-            <el-switch
+          <!-- <el-row> -->
+            <!-- <el-switch
               v-model="value1"
               @change="changeMidi"
               active-text="YouveGotAFriend"
@@ -130,10 +139,19 @@
             </el-switch>
             <el-button style="margin: 10px 10px" @click="handleChange">
               Playing:{{ playing }}
-            </el-button>
+            </el-button> -->
+          <!-- </el-row> -->
+          <!-- <el-slider
+            v-model="value2"
+            :step="10"
+            :format-tooltip="formatTooltip"
+            show-stops
+          >
+          </el-slider> -->
+          <el-row style="margin-top: 20px">
             <el-select
               style="margin: 10px 10px"
-              @change="onChange()"
+              @change="onChange"
               v-model="tmpvalue"
               placeholder="当前未选择"
             >
@@ -147,15 +165,6 @@
               >
               </el-option>
             </el-select>
-          </el-row>
-          <el-slider
-            v-model="value2"
-            :step="10"
-            :format-tooltip="formatTooltip"
-            show-stops
-          >
-          </el-slider>
-          <el-row style="margin-top: 20px">
             <el-button
               type="primary"
               size="small"
@@ -253,14 +262,15 @@ import CursorPlugin from "wavesurfer.js/dist/plugin/wavesurfer.cursor.js";
 import Timeline from "wavesurfer.js/dist/plugin/wavesurfer.timeline.js";
 import Regions from "wavesurfer.js/dist/plugin/wavesurfer.regions.js";
 import piano from "./piano.vue";
-import roll from "./roll.vue";
+// import roll from "./roll.vue";
 import { Midi } from "@tonejs/midi";
+import { Roll } from "../roll/Roll.js";
 export default {
   //   name: "Table",
   //   mixins: [authorityCheck],
   components: {
     piano,
-    roll,
+    // roll,
   },
   props: {
     mode: {
@@ -276,7 +286,7 @@ export default {
   data() {
     return {
       tmpvalue: "",
-      value2: 50,
+      // value2: 50,
       playing: false,
       tracks: [],
       showTrack: {},
@@ -284,6 +294,8 @@ export default {
       value1: true,
       MidiHead: {},
       duration: 0,
+      notes: [],
+      roll: null,
       //以上是
       userToBeCheckedName: "",
       studyNumAll: 0,
@@ -310,7 +322,7 @@ export default {
       value: 400,
       appointTime: 0, // 指定播放功能的播放时间点
       rate: 1.0, // 播放倍速
-      pixel: 200, //一秒内像素值
+      pixel: 20, //一秒内像素值
       getTaskTime: 0,
       submitTaskTime: "",
       taskIdShow: false,
@@ -336,14 +348,14 @@ export default {
       wvProgressColor: "rgba(190,237,199,1)",
       flashWaveColor: true,
       flashProgressColor: true,
-      containerWidth: 0, // 容器宽度
+      // containerWidth: 0, // 容器宽度
       waveScrollLeft: 0,
       waveDuration: 0,
     };
   },
   computed: {
     containerTimeLength() {
-      return this.containerWidth / this.value;
+      return document.getElementById("waveform").offsetWidth / this.value;
     },
     scrolledTime() {
       return this.waveScrollLeft / this.value;
@@ -353,22 +365,21 @@ export default {
     this.readStorage();
   },
   mounted() {
+    // const that = this;
 
-    const that = this;
-    
-    that.containerWidth = document.getElementById("waveform").offsetWidth;
-    window.onresize = function () {
-      that.containerWidth = document.getElementById("waveform").offsetWidth;
-    };
+    // that.containerWidth = document.getElementById("waveform").offsetWidth;
+    // window.onresize = function () {
+    //   that.containerWidth = document.getElementById("waveform").offsetWidth;
+    // };
     // 刷新页面也记录颜色配置：
     window.addEventListener("beforeunload", () => {
       this.writeStroage();
     });
 
     // 标注模式下，起始放大倍率低点，方便标注
-    if (this.mode == "LABEL_MODE") {
-      this.value = 200;
-    }
+    // if (this.mode == "LABEL_MODE") {
+    this.value = 200;
+    // }
     this.$nextTick(() => {
       this.wavesurfer = WaveSurfer.create({
         //容器
@@ -436,21 +447,41 @@ export default {
         ],
       });
       this.wavesurfer.on("play", () => {
-        this.waveDuration = this.wavesurfer.getDuration();
+        console.log("?????play");
+        // this.waveDuration = this.wavesurfer.getDuration();
+        this.waveDuration = this.duration;
       });
       // 监听播放事件
       // this.wavesurfer.on('scroll',(e)=>{
       //   this.waveScrollLeft = e.target.scrollLeft;
       // })
+      this.wavesurfer.on("seek", (e) => {
+        this.roll.changeSeek(e * this.waveDuration * this.value);
+        // console.log(e);
+      });
+      this.wavesurfer.on("scroll", (e) => {
+        this.roll.changeScrollLeft(e.target.scrollLeft);
+        // console.log(e.target.scrollLeft);
+      });
       this.wavesurfer.on("audioprocess", (currentTime) => {
-        console.log(currentTime)
+        // console.log(currentTime);
         this.waveScrollLeft = this.wavesurfer.drawer.wrapper.scrollLeft;
+        this.roll &&
+          this.roll.changeLineLeft(
+            currentTime,
+            this.containerTimeLength,
+            this.scrolledTime,
+            this.waveScrollLeft,
+            this.waveDuration
+          );
+        // console.log(this.waveScrollLeft);
         if (
           this.scrolledTime + this.containerTimeLength < currentTime &&
           currentTime <= this.waveDuration - this.containerTimeLength
         ) {
           this.wavesurfer.drawer.wrapper.scrollLeft =
-            this.waveScrollLeft + this.containerWidth;
+            this.waveScrollLeft +
+            document.getElementById("waveform").offsetWidth;
         } else if (currentTime < this.scrolledTime) {
           this.wavesurfer.drawer.wrapper.scrollLeft = currentTime * this.value;
         } else if (currentTime > this.waveDuration - this.containerTimeLength) {
@@ -503,7 +534,9 @@ export default {
       this.wavesurfer.on("ready", () => {
         this.wavesurfer.zoom(this.value);
       });
+      this.wavesurfer.zoom(this.value);
     });
+    
   },
   beforeDestroy() {
     document.removeEventListener("keydown", document.fastKey); // 组件销毁前移除绑定事件
@@ -529,16 +562,17 @@ export default {
       }
       // this.showTrack = this.tracks[parseInt(this.tmpvalue)];
       console.log(this.showTrack);
+      this.roll.update(this.showTrack, this.duration, this.MidiHead);
     },
     changeMidi() {
       this.tracks = [];
       // this.value1 = !this.value1;
       this.getMidi();
     },
-    getMidi() {
+    async getMidi() {
       // console.log("!!!!!");
       // console.log(process.env.BASE_URL);
-      Midi.fromUrl(
+      await Midi.fromUrl(
         this.value1
           ? `${process.env.BASE_URL}audio/0.mid`
           : `${process.env.BASE_URL}audio/0.mid`
@@ -554,13 +588,11 @@ export default {
           }
         });
         if (this.tracks.length !== 0) {
-          this.value = this.tracks[0].index;
+          this.tmpvalue = this.tracks[0].index;
           this.showTrack = this.tracks[0];
         }
         console.log(this.tracks);
         console.log(this.showTrack);
-
-        this.update = true;
       });
     },
     abandonEventDone() {
@@ -637,15 +669,24 @@ export default {
       // "播放/暂停"按钮的单击触发事件，暂停的话单击则播放，正在播放的话单击则暂停播放
       this.wavesurfer.playPause.bind(this.wavesurfer)();
       this.playing = !this.playing;
+      this.playing ? this.roll.start() : this.roll.stop();
     },
-    changeZoom() {
+    changeZoom(newV, oldV) {
+      // console.log(newV);
+      // console.log(oldV);
       this.wavesurfer.zoom(this.value);
+      this.roll.changeXAxis(newV, oldV);
+      this.roll.update(this.showTrack, this.duration, this.MidiHead);
+      if (this.playing) this.roll.start();
     },
     changeLong() {
       this.value = this.value + this.pixel;
       this.wavesurfer.zoom(this.value);
     },
     changeLongHotKey() {
+      this.roll.changeXAxis(400, this.value);
+      this.roll.update(this.showTrack, this.duration, this.MidiHead);
+      if (this.playing) this.roll.start();
       this.value = 400;
       this.wavesurfer.zoom(this.value);
     },
@@ -657,10 +698,14 @@ export default {
         });
         return;
       }
+
       this.value = this.value - this.pixel;
       this.wavesurfer.zoom(this.value);
     },
     changeShortHotKey() {
+      this.roll.changeXAxis(40, this.value);
+      this.roll.update(this.showTrack, this.duration, this.MidiHead);
+      if (this.playing) this.roll.start();
       this.value = 40;
       this.wavesurfer.zoom(this.value);
     },
@@ -722,7 +767,7 @@ export default {
         this.wavesurfer.play(timeNow, timeNow);
       }, time);
     },
-    getTask() {
+    async getTask() {
       // 修改模式默认有权限
       //   if(this.mode != 'CHANGE_MODE'){
       //     if (!this.authority) {
@@ -730,7 +775,20 @@ export default {
       //       return ;
       //     }
       //   }
-      this.getMidi();
+      await this.getMidi();
+
+      if (this.roll !== null) {
+        console.log("update");
+        // this.roll.update(this.track,this.duration,this.head);
+      } else {
+        console.log("new");
+        console.log(this.MidiHead);
+        this.roll = new Roll(this.MidiHead, this.wavesurfer);
+        // console.log("bug");
+        this.roll.setScore(this.showTrack, this.duration);
+      }
+      this.update = true;
+      if (this.playing) this.roll.start();
       this.currentPage = 1; // 领取任务前切换页面为1
       this.labelData = []; // 领取任务前先清空表格
       const aData = new Date();
@@ -741,9 +799,9 @@ export default {
         (aData.getMonth() + 1) +
         "-" +
         aData.getDate();
-      this.wavesurfer.load("/audio/0.wav");
+      this.wavesurfer.load(`${process.env.BASE_URL}audio/0.wav`);
       this.itemId = null;
-      this.audioName = "/audio/0.wav".split("/").slice(-1)[0];
+      this.audioName = `${process.env.BASE_URL}audio/0.wav`.split("/").slice(-1)[0];
       this.uid = 113889;
       if (this.mode == "LABEL_MODE") {
         this.lyricsSaveItems = [];
@@ -759,6 +817,67 @@ export default {
 };
 </script>
 <style scoped>
+#root {
+  width: 100%;
+  height: 100%;
+}
+#line {
+  width: 2px;
+  z-index: 3;
+  background-color: red;
+  height: 100%;
+  display: flex;
+  position: absolute;
+  left: 0px;
+}
+#RollContainer {
+  position: relative;
+  width: 100%;
+  /* height: calc(100% - 25px); */
+  height: 100%;
+  /* left: 0px; */
+  /* top: 0px; */
+  overflow: hidden;
+}
+#TriggerLine {
+  position: absolute;
+  left: calc(50% - 3px / 2);
+  height: 100%;
+  background-color: black;
+  width: 3px;
+  z-index: 2;
+  opacity: 0.1;
+  pointer-events: none;
+}
+#ScoreCanvas {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  z-index: 0;
+  /* height: calc(100% - 25px); */
+}
+#ScrollContainer {
+  height: calc(100% + 25px);
+  /* height: 100%; */
+  width: 100%;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  overflow-y: hidden;
+  overflow-x: scroll;
+}
+#PianoRoll {
+  display: inline;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0px;
+  left: 0px;
+  z-index: 1;
+  background-color: transparent;
+}
 .ScrollArea {
   margin: 10px auto;
   /* width: 1800px; */
