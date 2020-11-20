@@ -108,7 +108,6 @@
                 <piano />
               </div>
               <div class="roll">
-
                 <roll
                   :track="showTrack"
                   :head="MidiHead"
@@ -284,7 +283,7 @@ export default {
       update: false,
       value1: true,
       MidiHead: {},
-      duration:0,
+      duration: 0,
       //以上是
       userToBeCheckedName: "",
       studyNumAll: 0,
@@ -309,9 +308,9 @@ export default {
       itemId: null,
       wavesurfer: null,
       value: 400,
-      appointTime: 1, // 指定播放功能的播放时间点
+      appointTime: 0, // 指定播放功能的播放时间点
       rate: 1.0, // 播放倍速
-      pixel: 20, //一秒内像素值
+      pixel: 200, //一秒内像素值
       getTaskTime: 0,
       submitTaskTime: "",
       taskIdShow: false,
@@ -354,9 +353,9 @@ export default {
     this.readStorage();
   },
   mounted() {
-    this.getMidi();
-    const that = this;
 
+    const that = this;
+    
     that.containerWidth = document.getElementById("waveform").offsetWidth;
     window.onresize = function () {
       that.containerWidth = document.getElementById("waveform").offsetWidth;
@@ -368,7 +367,7 @@ export default {
 
     // 标注模式下，起始放大倍率低点，方便标注
     if (this.mode == "LABEL_MODE") {
-      this.value = 100;
+      this.value = 200;
     }
     this.$nextTick(() => {
       this.wavesurfer = WaveSurfer.create({
@@ -444,7 +443,7 @@ export default {
       //   this.waveScrollLeft = e.target.scrollLeft;
       // })
       this.wavesurfer.on("audioprocess", (currentTime) => {
-        // console.log(currentTime)
+        console.log(currentTime)
         this.waveScrollLeft = this.wavesurfer.drawer.wrapper.scrollLeft;
         if (
           this.scrolledTime + this.containerTimeLength < currentTime &&
@@ -541,8 +540,8 @@ export default {
       // console.log(process.env.BASE_URL);
       Midi.fromUrl(
         this.value1
-          ? `${process.env.BASE_URL}audio/YouveGotAFriend.mid`
-          : `${process.env.BASE_URL}audio/IFeelTheEarthMove.mid`
+          ? `${process.env.BASE_URL}audio/0.mid`
+          : `${process.env.BASE_URL}audio/0.mid`
       ).then((midi) => {
         this.duration = midi.duration;
         this.MidiHead = midi.header;
@@ -637,6 +636,7 @@ export default {
     playMusic() {
       // "播放/暂停"按钮的单击触发事件，暂停的话单击则播放，正在播放的话单击则暂停播放
       this.wavesurfer.playPause.bind(this.wavesurfer)();
+      this.playing = !this.playing;
     },
     changeZoom() {
       this.wavesurfer.zoom(this.value);
@@ -730,6 +730,7 @@ export default {
       //       return ;
       //     }
       //   }
+      this.getMidi();
       this.currentPage = 1; // 领取任务前切换页面为1
       this.labelData = []; // 领取任务前先清空表格
       const aData = new Date();
@@ -740,9 +741,9 @@ export default {
         (aData.getMonth() + 1) +
         "-" +
         aData.getDate();
-      this.wavesurfer.load("/audio/2.mp3");
+      this.wavesurfer.load("/audio/0.wav");
       this.itemId = null;
-      this.audioName = "/audio/2.mp3".split("/").slice(-1)[0];
+      this.audioName = "/audio/0.wav".split("/").slice(-1)[0];
       this.uid = 113889;
       if (this.mode == "LABEL_MODE") {
         this.lyricsSaveItems = [];
@@ -785,7 +786,7 @@ export default {
 }
 .roll {
   /* background-color: aquamarine; */
-  width: calc(100% - 80px); 
+  width: calc(100% - 80px);
   height: 100%;
 }
 #waveform {

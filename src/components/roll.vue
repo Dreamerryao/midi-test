@@ -54,6 +54,7 @@ export default {
   methods: {},
   created() {},
   mounted() {
+
     if (this.roll !== null) {
       console.log("update");
       // this.roll.update(this.track,this.duration,this.head);

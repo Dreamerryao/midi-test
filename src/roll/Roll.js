@@ -36,7 +36,7 @@ export class Roll {
         this._alreadyRun = -1;
         //the time at the beginning of the piano roll
         // this._computedStartTime = 0;
-
+        this._lastFlag = 0;
         //set bpm
 
         //a binding of the loop
@@ -49,6 +49,7 @@ export class Roll {
         this._loop();
 
         this._width = this._scrollContainer.offsetWidth;
+        document.getElementById("waveform").style.width = document.getElementById("root").offsetWidth +"px";
         // this._currentScroll = this._scrollContainer.scrollLeft;
         // this._onScreenNotes();
         // this._score.draw(this._currentScroll);
@@ -56,6 +57,7 @@ export class Roll {
     }
     _resize() {
         this._width = this._scrollContainer.offsetWidth;
+        document.getElementById("waveform").style.width = document.getElementById("root").offsetWidth +"px";
         this._onScreenNotes();
         this._score.draw(this._currentScroll);
     }
@@ -73,12 +75,11 @@ export class Roll {
             this._currentScroll = this._alreadyRun;
             this._currentScroll += (delta / 1000) * this._score.pixelsPerSecond;
             this._alreadyRun = this._currentScroll;
+            (this._alreadyRun>=this._scrollElement.offsetWidth)&&(this.autoAdvance = false);
             this._line.style.left = this._alreadyRun +"px";
             // this._line.style.left = (this._currentScroll- this._scrollContainer.scrollLeft) +"px";
             // this._scrollContainer.scrollLeft = Math.round(this._currentScroll);
         }
-
-        
         if(!this.autoAdvance && (scrollLeft !== this._currentScroll)){
             // console.log(this._currentScroll)
             // console.log(scrollLeft);
@@ -88,13 +89,24 @@ export class Roll {
             this._onScreenNotes();
             this._score.draw(scrollLeft);
         }
+
         // if (scrollLeft !== this._currentScroll) {
-        if (this.autoAdvance && (scrollLeft + this._width < this._currentScroll || scrollLeft>this._alreadyRun ||  scrollLeft<this._alreadyRun-this._width)) {
+        if (this.autoAdvance && (scrollLeft + this._width < this._currentScroll|| scrollLeft>this._alreadyRun ||  scrollLeft<this._alreadyRun-this._width)) {
             // console.log("wwwwww");
             this._scrollContainer.scrollLeft = this._currentScroll;
             // this._currentScroll = scrollLeft;
             this._onScreenNotes();
             this._score.draw(this._currentScroll);
+        }
+        //最后一个width
+
+        if((this._currentScroll+this._width>this._scrollElement.offsetWidth)&&!this._lastFlag){
+            // console.log("xxxxx");
+            this._lastFlag = 1;
+            this._scrollContainer.scrollLeft = this._scrollElement.offsetWidth - this._width;
+            // this._currentScroll = scrollLeft;
+            this._onScreenNotes();
+            this._score.draw(this._scrollContainer.scrollLeft);
         }
         this.lastUpdate = currentTime;
     }
