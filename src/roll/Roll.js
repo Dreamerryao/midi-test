@@ -56,9 +56,11 @@ export class Roll {
         // this._score.draw(this._currentScroll);
         window.addEventListener("resize", this._resize.bind(this));
         this._scrollContainer.onscroll= this._onscroll.bind(this);
-        // onscroll = function(){
-        //     console.log("我哭了")
-        // }
+        this._scrollElement.onclick = this._onclick.bind(this);
+    }
+    _onclick(e){
+        // console.log(e)
+            this._wavesurfer.seekTo(e.offsetX/this._scrollElement.offsetWidth);
     }
     _onscroll(){
         this._wavesurfer.drawer.wrapper.scrollLeft = this._scrollContainer.scrollLeft;
@@ -67,7 +69,7 @@ export class Roll {
         this._width = this._scrollContainer.offsetWidth;
         document.getElementById("waveform").style.width = document.getElementById("root").offsetWidth + "px";
         this._onScreenNotes();
-        this._score.draw(this._currentScroll);
+        this._score.draw(this._scrollContainer.scrollLeft);
     }
     _onScreenNotes() {
         var width = this._width;
@@ -77,6 +79,7 @@ export class Roll {
     changeLineLeft(currentTime, containerTimeLength, scrolledTime, waveScrollLeft, waveDuration) {
         this._alreadyRun = currentTime * this._score.pixelsPerSecond;
         this._line.style.left = this._alreadyRun + "px";
+        var tmpValue = (waveDuration - containerTimeLength) * this._score.pixelsPerSecond;
         if (
             scrolledTime + containerTimeLength < currentTime &&
             currentTime <= waveDuration - containerTimeLength
@@ -90,12 +93,12 @@ export class Roll {
             this._scrollContainer.scrollLeft = currentTime * this._score.pixelsPerSecond;
             this._onScreenNotes();
             this._score.draw(this._scrollContainer.scrollLeft);
-        } else if (currentTime > waveDuration - containerTimeLength) {
-            console.log("1111");
-            this._scrollContainer.scrollLeft =
-                (waveDuration - containerTimeLength) * this._score.pixelsPerSecond;
+        } else if ((currentTime > waveDuration - containerTimeLength) &&  (this._scrollContainer.scrollLeft<=tmpValue-5)) {
+            this._scrollContainer.scrollLeft = tmpValue;
+            this._onscroll();
             this._onScreenNotes();
             this._score.draw(this._scrollContainer.scrollLeft);
+            
         }
     }
     changeScrollLeft(newV) {

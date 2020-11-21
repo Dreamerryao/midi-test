@@ -365,12 +365,12 @@ export default {
     this.readStorage();
   },
   mounted() {
-    // const that = this;
+    const that = this;
 
-    // that.containerWidth = document.getElementById("waveform").offsetWidth;
-    // window.onresize = function () {
-    //   that.containerWidth = document.getElementById("waveform").offsetWidth;
-    // };
+    that.containerWidth = document.getElementById("waveform").offsetWidth;
+    window.onresize = function () {
+      that.containerWidth = document.getElementById("waveform").offsetWidth;
+    };
     // 刷新页面也记录颜色配置：
     window.addEventListener("beforeunload", () => {
       this.writeStroage();
@@ -419,8 +419,8 @@ export default {
             customStyle: {
               width: "21px",
               top: "60px",
-              //   bottom: "60px",
-              bottom: "100px",
+                bottom: "60px",
+              // bottom: "100px",
               "margin-left": "80px",
             },
             customShowTimeStyle: {
@@ -446,18 +446,17 @@ export default {
           }),
         ],
       });
-      this.wavesurfer.on("play", () => {
-        console.log("?????play");
-        // this.waveDuration = this.wavesurfer.getDuration();
-        this.waveDuration = this.duration;
-      });
+      // this.wavesurfer.on("play", () => {
+      //   console.log("?????play");
+      //   // this.waveDuration = this.wavesurfer.getDuration();
+      //   this.waveDuration = this.duration;
+      // });
       // 监听播放事件
       // this.wavesurfer.on('scroll',(e)=>{
       //   this.waveScrollLeft = e.target.scrollLeft;
       // })
       this.wavesurfer.on("seek", (e) => {
         this.roll.changeSeek(e * this.waveDuration * this.value);
-        // console.log(e);
       });
       this.wavesurfer.on("scroll", (e) => {
         this.roll.changeScrollLeft(e.target.scrollLeft);
@@ -484,9 +483,8 @@ export default {
             document.getElementById("waveform").offsetWidth;
         } else if (currentTime < this.scrolledTime) {
           this.wavesurfer.drawer.wrapper.scrollLeft = currentTime * this.value;
-        } else if (currentTime > this.waveDuration - this.containerTimeLength) {
-          this.wavesurfer.drawer.wrapper.scrollLeft =
-            (this.waveDuration - this.containerTimeLength) * this.value;
+        } else if ((currentTime > this.waveDuration - this.containerTimeLength)) {
+          this.wavesurfer.drawer.wrapper.scrollLeft =(this.waveDuration - this.containerTimeLength) * this.value;
         }
       });
       //绑定键盘事件
@@ -532,9 +530,11 @@ export default {
         },
       });
       this.wavesurfer.on("ready", () => {
+        console.log("readY!")
+        this.waveDuration = this.duration;
         this.wavesurfer.zoom(this.value);
       });
-      this.wavesurfer.zoom(this.value);
+
     });
     
   },
@@ -776,7 +776,7 @@ export default {
       //     }
       //   }
       await this.getMidi();
-
+      this.containerWidth = document.getElementById("waveform").offsetWidth;
       if (this.roll !== null) {
         console.log("update");
         // this.roll.update(this.track,this.duration,this.head);
@@ -799,7 +799,8 @@ export default {
         (aData.getMonth() + 1) +
         "-" +
         aData.getDate();
-      this.wavesurfer.load(`${process.env.BASE_URL}audio/0.wav`);
+      await this.wavesurfer.load(`${process.env.BASE_URL}audio/0.wav`);
+      this.wavesurfer.zoom(this.value);
       this.itemId = null;
       this.audioName = `${process.env.BASE_URL}audio/0.wav`.split("/").slice(-1)[0];
       this.uid = 113889;
@@ -824,7 +825,7 @@ export default {
 #line {
   width: 2px;
   z-index: 3;
-  background-color: red;
+  background-color: yellow;
   height: 100%;
   display: flex;
   position: absolute;
